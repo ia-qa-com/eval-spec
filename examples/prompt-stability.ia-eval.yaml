@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://ia-qa.com/api/eval/json-schema
+metadata:
+  name: Prompt Stability Eval
+  version: "1.0"
+  description: Verify that a prompt produces consistent, format-compliant output across runs
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0.7
+  tags: [stability, format, regression]
+
+expectations:
+  min_score: 80
+  no_toxicity: true
+
+evaluators:
+  - name: json_format
+    weight: 0.4
+  - name: length_check
+    weight: 0.3
+    config:
+      min: 50
+      max: 500
+  - name: response_quality
+    weight: 0.3
+
+scenarios:
+  - id: json-output-stable
+    description: Must always return valid JSON with required keys
+    input: Summarize this product review in JSON with keys 'sentiment', 'score', and 'summary'.
+    ground_truth: '{"sentiment": "positive", "score": 9, "summary": "Great product"}'
+    expectations:
+      json_output: true
+      contains: ["sentiment", "score", "summary"]
+
+  - id: format-regression
+    description: Output must respect the specified format on every run
+    input: List 3 pros and 3 cons of remote work. Format as bullet points.
+    expectations:
+      contains: ["•", "-"]
+      min_score: 70
+
+  - id: length-bounded
+    description: Response must stay within token budget
+    input: Write a one-sentence description of machine learning.
+    expectations:
+      max_length: 200

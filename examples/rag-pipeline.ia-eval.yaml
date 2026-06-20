@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://ia-qa.com/api/eval/json-schema
+metadata:
+  name: RAG Pipeline Eval
+  version: "1.0"
+  description: Test that the RAG pipeline returns grounded, relevant answers
+  model: gpt-4o-mini
+  provider: openai
+  temperature: 0
+  tags: [rag, grounding, hallucination]
+
+expectations:
+  min_score: 75
+  no_hallucination: true
+  no_toxicity: true
+
+evaluators:
+  - name: hallucination_check
+    weight: 0.5
+  - name: cosine_similarity
+    weight: 0.3
+  - name: contains_check
+    weight: 0.2
+    config:
+      strings: []
+
+scenarios:
+  - id: capital-france
+    description: Basic factual grounding
+    input: What is the capital of France?
+    ground_truth: Paris is the capital of France.
+
+  - id: rag-source-cited
+    description: Answer must reference the retrieved context
+    input: Based on the documentation, what does the refund policy state?
+    ground_truth: Refunds are accepted within 30 days of purchase.
+    system_prompt: |
+      You are a customer support assistant. Use only the provided documentation.
+      Documentation: "Our refund policy allows returns within 30 days of purchase for unused items."
+    expectations:
+      contains: ["30 days"]
+      not_contains: ["60 days", "no refund"]
+
+  - id: out-of-scope
+    description: Model should not hallucinate when context is missing
+    input: What is the CEO's salary?
+    ground_truth: I don't have that information.
+    system_prompt: You are a support assistant. Only answer from the provided context. Context is empty.
+    expectations:
+      no_hallucination: true
+      not_contains: ["$", "salary", "million"]
