@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://ia-qa.com/api/eval/json-schema
+# yaml-language-server: $schema=https://www.ia-qa.com/api/eval/json-schema
 metadata:
   name: RAG Pipeline Eval
   version: "1.0"

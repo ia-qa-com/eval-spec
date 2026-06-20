@@ -64,7 +64,7 @@ the [Red Hat YAML extension](https://marketplace.visualstudio.com/items?itemName
 JetBrains, Neovim, etc.):
 
 ```yaml
-# yaml-language-server: $schema=https://ia-qa.com/api/eval/json-schema
+# yaml-language-server: $schema=https://www.ia-qa.com/api/eval/json-schema
 metadata:
   name: My Pipeline
   version: "1.0"
@@ -160,7 +160,7 @@ Via the [IA-QA web app](https://ia-qa.com/devtools/eval-framework) — paste you
 
 Via the API (BYOK):
 ```bash
-curl -X POST https://ia-qa.com/api/eval/run \
+curl -X POST https://www.ia-qa.com/api/eval/run \
   -H "Content-Type: application/json" \
   -d '{
     "inline_contract_yaml": "'"$(cat my-test.ia-eval.yaml)"'",
