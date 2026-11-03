@@ -1,91 +1,1071 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "IA-QA Evaluation Contract",
-  "description": "Defines a suite of AI model evaluation tests. Save as <name>.ia-eval.yaml",
   "type": "object",
-  "required": ["metadata", "scenarios"],
-  "additionalProperties": false,
   "properties": {
     "metadata": {
       "type": "object",
-      "required": ["name", "version"],
-      "additionalProperties": false,
       "properties": {
-        "name":          { "type": "string", "minLength": 1, "maxLength": 200, "description": "Human-readable contract name" },
-        "version":       { "type": "string", "pattern": "^\\d+\\.\\d+", "description": "SemVer version (e.g. 1.0)" },
-        "description":   { "type": "string", "maxLength": 1000 },
-        "tags":          { "type": "array", "items": { "type": "string", "maxLength": 50 }, "maxItems": 20 },
-        "author":        { "type": "string", "maxLength": 200 },
-        "created_at":    { "type": "string", "description": "ISO date string" },
-        "model":         { "type": "string", "maxLength": 100, "description": "Default model (e.g. gpt-4o-mini)" },
-        "provider":      { "type": "string", "maxLength": 50, "description": "Default provider: openai | anthropic | groq | google | hf" },
-        "temperature":   { "type": "number", "minimum": 0, "maximum": 2 },
-        "max_tokens":    { "type": "integer", "minimum": 1, "maximum": 100000 },
-        "system_prompt": { "type": "string", "maxLength": 10000 }
-      }
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "description": "Human-readable contract name"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+",
+          "description": "Contract version (e.g. 1.0)"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "tags": {
+          "default": [],
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 50
+          }
+        },
+        "author": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "created_at": {
+          "description": "ISO date string",
+          "type": "string"
+        },
+        "model": {
+          "description": "Default model id",
+          "type": "string",
+          "maxLength": 100
+        },
+        "provider": {
+          "description": "Default provider: openai | anthropic | google | groq | deepseek | xai | mistral | huggingface",
+          "type": "string",
+          "maxLength": 50
+        },
+        "temperature": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "max_tokens": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 100000
+        },
+        "system_prompt": {
+          "type": "string",
+          "maxLength": 10000
+        }
+      },
+      "required": [
+        "name",
+        "version"
+      ],
+      "additionalProperties": false
     },
     "scenarios": {
-      "type": "array",
       "minItems": 1,
       "maxItems": 500,
+      "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "input"],
-        "additionalProperties": false,
         "properties": {
-          "id":            { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "^[\\w\\-]+$" },
-          "description":   { "type": "string", "maxLength": 500 },
-          "input":         { "type": "string", "minLength": 1, "maxLength": 50000, "description": "User prompt sent to the model" },
-          "ground_truth":  { "type": "string", "maxLength": 50000, "description": "Expected correct answer" },
-          "system_prompt": { "type": "string", "maxLength": 10000 },
-          "model":         { "type": "string", "maxLength": 100 },
-          "provider":      { "type": "string", "maxLength": 50 },
-          "temperature":   { "type": "number", "minimum": 0, "maximum": 2 },
-          "tags":          { "type": "array", "items": { "type": "string", "maxLength": 50 }, "maxItems": 20 },
-          "skip":          { "type": "boolean", "description": "Skip this scenario" },
-          "expectations":  { "type": "object", "description": "Per-scenario expectation overrides", "additionalProperties": true }
-        }
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[\\w\\-]+$"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "input": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50000,
+            "description": "User prompt sent to the model"
+          },
+          "ground_truth": {
+            "description": "Expected correct answer",
+            "type": "string",
+            "maxLength": 50000
+          },
+          "system_prompt": {
+            "type": "string",
+            "maxLength": 10000
+          },
+          "model": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "provider": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "temperature": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2
+          },
+          "tags": {
+            "default": [],
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 50
+            }
+          },
+          "skip": {
+            "default": false,
+            "description": "Skip this scenario",
+            "type": "boolean"
+          },
+          "expectations": {
+            "type": "object",
+            "properties": {
+              "language": {
+                "description": "Assertion: the output is in this ISO 639-1 language. Not evaluated (never passed) on an output too short to tell.",
+                "type": "string",
+                "enum": [
+                  "en",
+                  "fr",
+                  "es",
+                  "de",
+                  "it",
+                  "pt",
+                  "nl",
+                  "ru",
+                  "zh",
+                  "ja",
+                  "ko",
+                  "ar",
+                  "pl",
+                  "tr",
+                  "sv"
+                ]
+              },
+              "min_length": {
+                "description": "Assertion: at least this many characters",
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "max_length": {
+                "description": "Assertion: at most this many characters",
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "no_hallucination": {
+                "description": "Assertion: the output is lexically grounded in ground_truth. Not evaluated (never passed) without a ground_truth.",
+                "type": "boolean"
+              },
+              "no_toxicity": {
+                "description": "Assertion: the output is not toxic",
+                "type": "boolean"
+              },
+              "json_output": {
+                "description": "Assertion: the output is valid JSON",
+                "type": "boolean"
+              },
+              "contains": {
+                "description": "Assertion: every string appears (case-insensitive)",
+                "maxItems": 50,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              },
+              "not_contains": {
+                "description": "Assertion: no string appears (case-insensitive)",
+                "maxItems": 50,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              },
+              "regex": {
+                "description": "Assertion: the output matches this regex",
+                "type": "string",
+                "maxLength": 500
+              },
+              "min_score": {
+                "description": "Overrides the global min_score for this scenario",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "additionalProperties": false,
+            "description": "Overrides the global expectations field by field: a contains here replaces the global contains"
+          },
+          "evaluators": {
+            "description": "Replaces the contract evaluators for this scenario, e.g. a judge with its own rubric",
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "const": "exact_match"
+                    },
+                    "weight": {
+                      "default": 1,
+                      "description": "Relative weight in the score (default 1)",
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "config": {
+                      "default": {},
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "const": "contains_check"
+                    },
+                    "weight": {
+                      "default": 1,
+                      "description": "Relative weight in the score (default 1)",
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "config": {
+                      "default": {},
+                      "type": "object",
+                      "properties": {
+                        "strings": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "const": "not_contains_check"
+                    },
+                    "weight": {
+                      "default": 1,
+                      "description": "Relative weight in the score (default 1)",
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "config": {
+                      "default": {},
+                      "type": "object",
+                      "properties": {
+                        "strings": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "const": "json_format"
+                    },
+                    "weight": {
+                      "default": 1,
+                      "description": "Relative weight in the score (default 1)",
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "config": {
+                      "default": {},
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "const": "regex_match"
+                    },
+                    "weight": {
+                      "default": 1,
+                      "description": "Relative weight in the score (default 1)",
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "config": {
+                      "default": {},
+                      "type": "object",
+                      "properties": {
+                        "pattern": {
+                          "type": "string"
+                        },
+                        "flags": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "const": "length_check"
+                    },
+                    "weight": {
+                      "default": 1,
+                      "description": "Relative weight in the score (default 1)",
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "config": {
+                      "default": {},
+                      "type": "object",
+                      "properties": {
+                        "min_length": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "max_length": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "const": "hallucination_check"
+                    },
+                    "weight": {
+                      "default": 1,
+                      "description": "Relative weight in the score (default 1)",
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "config": {
+                      "default": {},
+                      "type": "object",
+                      "properties": {
+                        "context": {
+                          "type": "string"
+                        },
+                        "min_grounding": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "const": "toxicity_filter"
+                    },
+                    "weight": {
+                      "default": 1,
+                      "description": "Relative weight in the score (default 1)",
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "config": {
+                      "default": {},
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "const": "response_quality"
+                    },
+                    "weight": {
+                      "default": 1,
+                      "description": "Relative weight in the score (default 1)",
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "config": {
+                      "default": {},
+                      "type": "object",
+                      "properties": {
+                        "expected_keywords": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "max_length": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "min_quality": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "const": "llm_as_judge"
+                    },
+                    "weight": {
+                      "default": 1,
+                      "description": "Relative weight in the score (default 1)",
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "config": {
+                      "default": {},
+                      "type": "object",
+                      "properties": {
+                        "model": {
+                          "type": "string"
+                        },
+                        "provider": {
+                          "type": "string"
+                        },
+                        "rubric": {
+                          "type": "string"
+                        },
+                        "min_score": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "const": "cosine_similarity"
+                    },
+                    "weight": {
+                      "default": 1,
+                      "description": "Relative weight in the score (default 1)",
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "config": {
+                      "default": {},
+                      "type": "object",
+                      "properties": {
+                        "min_similarity": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "input"
+        ],
+        "additionalProperties": false
       }
     },
     "expectations": {
+      "default": {
+        "min_score": 70,
+        "no_hallucination": false,
+        "no_toxicity": false,
+        "json_output": false,
+        "contains": [],
+        "not_contains": []
+      },
+      "description": "Global pass criteria, applied to every scenario",
       "type": "object",
-      "description": "Global pass criteria applied to all scenarios",
-      "additionalProperties": false,
       "properties": {
-        "min_score":        { "type": "number", "minimum": 0, "maximum": 100, "description": "Minimum score to PASS (0-100, default 70)" },
-        "tone":             { "type": "string", "enum": ["professional", "friendly", "neutral", "technical"] },
-        "language":         { "type": "string", "minLength": 2, "maxLength": 5, "description": "Expected ISO 639-1 language code" },
-        "max_length":       { "type": "integer", "minimum": 1, "description": "Maximum output length in characters" },
-        "no_hallucination": { "type": "boolean" },
-        "no_toxicity":      { "type": "boolean" },
-        "json_output":      { "type": "boolean", "description": "Expect model output to be valid JSON" },
-        "contains":         { "type": "array", "items": { "type": "string", "maxLength": 500 }, "maxItems": 50 },
-        "not_contains":     { "type": "array", "items": { "type": "string", "maxLength": 500 }, "maxItems": 50 },
-        "regex":            { "type": "string", "maxLength": 500, "description": "Output must match this regex" }
-      }
+        "language": {
+          "description": "Assertion: the output is in this ISO 639-1 language. Not evaluated (never passed) on an output too short to tell.",
+          "type": "string",
+          "enum": [
+            "en",
+            "fr",
+            "es",
+            "de",
+            "it",
+            "pt",
+            "nl",
+            "ru",
+            "zh",
+            "ja",
+            "ko",
+            "ar",
+            "pl",
+            "tr",
+            "sv"
+          ]
+        },
+        "min_length": {
+          "description": "Assertion: at least this many characters",
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        },
+        "max_length": {
+          "description": "Assertion: at most this many characters",
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        },
+        "no_hallucination": {
+          "default": false,
+          "description": "Assertion: the output is lexically grounded in ground_truth. Not evaluated (never passed) without a ground_truth.",
+          "type": "boolean"
+        },
+        "no_toxicity": {
+          "default": false,
+          "description": "Assertion: the output is not toxic",
+          "type": "boolean"
+        },
+        "json_output": {
+          "default": false,
+          "description": "Assertion: the output is valid JSON",
+          "type": "boolean"
+        },
+        "contains": {
+          "default": [],
+          "description": "Assertion: every string appears (case-insensitive)",
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "not_contains": {
+          "default": [],
+          "description": "Assertion: no string appears (case-insensitive)",
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "regex": {
+          "description": "Assertion: the output matches this regex",
+          "type": "string",
+          "maxLength": 500
+        },
+        "min_score": {
+          "default": 70,
+          "description": "Minimum score to PASS, 0-100 (default 70). A failed assertion fails the scenario whatever the score.",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "additionalProperties": false
     },
     "evaluators": {
-      "type": "array",
+      "default": [],
+      "description": "Weighted scorers: their average is the score compared to min_score. Assertions in expectations are enforced apart from it.",
       "maxItems": 20,
-      "description": "Ordered list of ia-qa scorer tools to invoke",
+      "type": "array",
       "items": {
-        "type": "object",
-        "required": ["name"],
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string",
-            "enum": [
-              "exact_match", "contains_check", "not_contains_check",
-              "json_format", "regex_match", "length_check",
-              "hallucination_check", "toxicity_filter",
-              "response_quality", "llm_as_judge", "cosine_similarity"
-            ]
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "const": "exact_match"
+              },
+              "weight": {
+                "default": 1,
+                "description": "Relative weight in the score (default 1)",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "config": {
+                "default": {},
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
           },
-          "weight": { "type": "number", "minimum": 0, "maximum": 1, "description": "Relative weight in final score (default 1)" },
-          "config": { "type": "object", "description": "Scorer-specific config (pattern, strings, model…)" }
-        }
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "const": "contains_check"
+              },
+              "weight": {
+                "default": 1,
+                "description": "Relative weight in the score (default 1)",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "config": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "strings": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "const": "not_contains_check"
+              },
+              "weight": {
+                "default": 1,
+                "description": "Relative weight in the score (default 1)",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "config": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "strings": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "const": "json_format"
+              },
+              "weight": {
+                "default": 1,
+                "description": "Relative weight in the score (default 1)",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "config": {
+                "default": {},
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "const": "regex_match"
+              },
+              "weight": {
+                "default": 1,
+                "description": "Relative weight in the score (default 1)",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "config": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "pattern": {
+                    "type": "string"
+                  },
+                  "flags": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "const": "length_check"
+              },
+              "weight": {
+                "default": 1,
+                "description": "Relative weight in the score (default 1)",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "config": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "min_length": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "max_length": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "const": "hallucination_check"
+              },
+              "weight": {
+                "default": 1,
+                "description": "Relative weight in the score (default 1)",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "config": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "context": {
+                    "type": "string"
+                  },
+                  "min_grounding": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "const": "toxicity_filter"
+              },
+              "weight": {
+                "default": 1,
+                "description": "Relative weight in the score (default 1)",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "config": {
+                "default": {},
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "const": "response_quality"
+              },
+              "weight": {
+                "default": 1,
+                "description": "Relative weight in the score (default 1)",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "config": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "expected_keywords": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "max_length": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "min_quality": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "const": "llm_as_judge"
+              },
+              "weight": {
+                "default": 1,
+                "description": "Relative weight in the score (default 1)",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "config": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string"
+                  },
+                  "provider": {
+                    "type": "string"
+                  },
+                  "rubric": {
+                    "type": "string"
+                  },
+                  "min_score": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "const": "cosine_similarity"
+              },
+              "weight": {
+                "default": 1,
+                "description": "Relative weight in the score (default 1)",
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "config": {
+                "default": {},
+                "type": "object",
+                "properties": {
+                  "min_similarity": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        ]
       }
     }
-  }
+  },
+  "required": [
+    "metadata",
+    "scenarios"
+  ],
+  "additionalProperties": false,
+  "title": "IA-QA Evaluation Contract",
+  "description": "Defines a suite of AI model evaluation tests. Save as <name>.ia-eval.yaml"
 }

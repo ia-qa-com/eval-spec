@@ -1,0 +1,33 @@
+# The hosted runner is the reference: this repository must describe what it does today. Weekly as well
+# as on push, because the runner changes without this repository changing.
+name: Validate
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: The published schema is the one the runner serves
+        run: |
+          curl -sSf https://www.ia-qa.com/api/eval/json-schema | jq -S . > live.json
+          jq -S . schema/ia-eval.schema.json > published.json
+          diff live.json published.json
+
+      - name: The runner accepts every example
+        run: |
+          for file in examples/*.ia-eval.yaml; do
+            echo "Checking $file"
+            jq -n --rawfile yaml "$file" '{ check: "eval", input: { contractYaml: $yaml } }' \
+              | curl -sSf -X POST https://www.ia-qa.com/api/build/check -H "Content-Type: application/json" --data-binary @- \
+              | tee result.json | jq -e '.valid == true' > /dev/null \
+              || { cat result.json; exit 1; }
+          done
