@@ -106,7 +106,7 @@ Full JSON Schema: [`schema/ia-eval.schema.json`](schema/ia-eval.schema.json)
 | `version` | string | ✅ | Contract version (e.g. `1.0`) |
 | `description` | string | | What this contract tests |
 | `model` | string | | Default model (default: `openai/gpt-oss-20b`) |
-| `provider` | string | | `openai` \| `anthropic` \| `google` \| `groq` \| `deepseek` \| `xai` \| `mistral` \| `huggingface` (default: `groq`) |
+| `provider` | string | | `openai` \| `anthropic` \| `google` \| `groq` \| `deepseek` \| `xai` \| `mistral` \| `huggingface` (default: read from the model name, else `groq`) |
 | `temperature` | number | | 0–2 (default: 0.7). Use 0 for a stable gate |
 | `max_tokens` | integer | | 1–100000 (default: 1024) |
 | `system_prompt` | string | | Default system prompt for all scenarios |

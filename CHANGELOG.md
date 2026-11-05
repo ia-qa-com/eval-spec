@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1
+
+- **A contract that names a model and no provider now uses that model's provider.** `model: gemini-3.5-flash-lite` used to go to Groq and read `PARTIAL` with a message asking for a Groq key. A contract that names neither still runs on Groq.
+- **On Google, `system_prompt` is sent as Gemini's system instruction.** It used to be pasted into the user message, so a guardrail tested on Gemini was not the one an application ships. Verdicts on such contracts can change.
+
 ## 1.1.0
 
 Until this version, a contract could pass without its assertions having been checked. If your CI turns red after this release, it is very likely reporting something that was already wrong.
